@@ -3,6 +3,7 @@ from datetime import date
 from io import BytesIO
 from fpdf import FPDF
 
+# Simple PDF generator (with the fixed output method)
 def create_summary_pdf(summary_text, today):
     pdf = FPDF()
     pdf.add_page()
@@ -25,13 +26,16 @@ No sensitive or identifying information was collected.
 Next steps will be discussed after review.
 """)
 
-    # Fixed output method
+    # Fixed: use dest='S' to get bytes safely
     pdf_bytes = pdf.output(dest='S').encode('latin-1')
     pdf_output = BytesIO(pdf_bytes)
     pdf_output.seek(0)
     return pdf_output
 
 
+# ────────────────────────────────────────────────
+# Streamlit App
+# ────────────────────────────────────────────────
 st.set_page_config(page_title="Initial Interest Form", layout="wide")
 
 st.title("CPA Services – Initial Interest Form")
@@ -43,11 +47,13 @@ No names, dates, account numbers, or personal details are requested.
 Use it to tell me what you're thinking about — we'll explore from there.
 """)
 
+# Session state initialization
 if "step" not in st.session_state:
     st.session_state.step = 1
 if "responses" not in st.session_state:
     st.session_state.responses = {}
 
+# ── Step 1: General Situation ──
 if st.session_state.step == 1:
     st.subheader("Step 1: General Situation")
 
@@ -90,6 +96,7 @@ if st.session_state.step == 1:
         st.session_state.step = 2
         st.rerun()
 
+# ── Step 2: A Few More Details ──
 elif st.session_state.step == 2:
     st.subheader("Step 2: A Few More Details")
 
@@ -143,6 +150,7 @@ elif st.session_state.step == 2:
             st.session_state.step = 3
             st.rerun()
 
+# ── Step 3: Review + PDF ──
 elif st.session_state.step == 3:
     st.subheader("Step 3: Review Your Responses")
 
@@ -191,7 +199,16 @@ elif st.session_state.step == 3:
 
         st.info("Thank you! This summary will help me prepare for a productive conversation.")
 
-        if st.button("Start Over (new prospect)"):
-            for key in list(st.session_state.keys()):
-                del st.session_state[key]
-            st.rerun()
+    # ── Improved Start Over button (Fix 1) ──
+    if st.button("Start Over (new prospect)"):
+        # Clear all existing session state keys safely
+        keys_to_clear = [k for k in st.session_state.keys()]
+        for key in keys_to_clear:
+            del st.session_state[key]
+        
+        # Immediately reset to Step 1 (before rerun)
+        st.session_state.step = 1
+        st.session_state.responses = {}
+        
+        st.success("Resetting form for new prospect...")  # Gives visual confirmation
+        st.rerun()
