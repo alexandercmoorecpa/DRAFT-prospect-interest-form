@@ -40,11 +40,11 @@ st.set_page_config(page_title="Initial Interest Form", layout="wide")
 
 st.title("CPA Services – Initial Interest Form")
 st.markdown("""
-This short, no-commitment form helps me understand a bit about your situation  
-so I can prepare for a useful conversation.  
+Tell me about your situation 
 
-No names, dates, account numbers, or personal details are requested.  
-Use it to tell me what you're thinking about — we'll explore from there.
+No names, dates, account numbers, or personal details are requested.
+  
+This will create a PDF to Download, this will summarize your situation for our meeting, we'll explore from there.
 """)
 
 # Session state initialization
